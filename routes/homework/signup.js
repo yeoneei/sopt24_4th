@@ -10,7 +10,6 @@ const util = require('../../module/utils');
 /* GET home page. */
 
 router.post('/',async(req,res)=>{
-    console.log("enter");
     let salt = await crypto.randomBytes(32);
     salt = salt.toString('base64');
     let hasedPw = await crypto.pbkdf2(String(req.body.password),salt,100,32,'SHA512');
