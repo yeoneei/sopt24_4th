@@ -132,7 +132,6 @@ router.get('/',async(req,res)=>{
             datas.push(temp);
         }
         res.status(200).send(util.successTrue(statusCode.OK,resMessage.READ_SUCCESS,datas));
-
     }
 })
 module.exports = router;
