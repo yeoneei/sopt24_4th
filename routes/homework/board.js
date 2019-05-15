@@ -97,6 +97,7 @@ router.delete('/',async(req,res)=>{
     }catch(err){
         console.log(err);
         connection.rollback(()=>{});
+        next(err);
         res.status(200).send(util.successFalse(statusCode.DB_ERROR,resMessage.BOARD_DROP_FAIL));
     }finally{
         console.log(deleteResult);
@@ -107,5 +108,31 @@ router.delete('/',async(req,res)=>{
         }
     }
 
+})
+
+router.get('/',async(req,res)=>{
+    let getAllBoardQuery = 'SELECT * FROM 4th.board';
+    let getAllBoardResult;
+    try{
+        var connection = await pool.getConnection();
+        getAllBoardResult = await connection.query(getAllBoardQuery);
+    }catch(err){
+        console.log(err);
+        connection.rollback(()=>{});
+        next(err);
+        res.status(200).send(util.successFalse(statusCode.DB_ERROR,resMessage.READ_FAIL));
+    }finally{
+        console.log(getAllBoardResult);
+        let datas = new Array();
+        for(key in getAllBoardResult){
+            let temp = {
+                title : getAllBoardResult[key].title,
+                content : getAllBoardResult[key].connection 
+            }
+            datas.push(temp);
+        }
+        res.status(200).send(util.successTrue(statusCode.OK,resMessage.READ_SUCCESS,datas));
+
+    }
 })
 module.exports = router;
