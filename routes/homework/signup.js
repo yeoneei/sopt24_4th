@@ -13,7 +13,7 @@ router.post('/',async(req,res)=>{
     console.log("enter");
     let salt = await crypto.randomBytes(32);
     salt = salt.toString('base64');
-    let hasedPw = await crypto.pbkdf2(String(req.body.pw),salt,100,32,'SHA512');
+    let hasedPw = await crypto.pbkdf2(String(req.body.password),salt,100,32,'SHA512');
     let basedPw = hasedPw.toString('base64');
     let userid = req.body.id;
     const getAllUserIdQuery = 'SELECT id FROM 4th.user';
@@ -42,7 +42,7 @@ router.post('/',async(req,res)=>{
 
     if(idCheck==true){
         //이거 반응이 안옴 왜지????????
-        res.status(200).send(util.successFalse(statusCode.BAD_REQUEST),resMessage.ALREADY_ID);
+        res.status(200).send(util.successFalse(statusCode.BAD_REQUEST,resMessage.ALREADY_ID));
     }else{
         const insertUserQuery ='INSERT INTO 4th.user (id, name, password, salt) VALUES (?, ?, ?, ?)';
        try{
@@ -52,7 +52,7 @@ router.post('/',async(req,res)=>{
        }catch(err){
            console.log(err);
            connection.rollback(()=>{});
-           res.status(200).send(util.successFalse(statusCode.BAD_REQUEST),resMessage.SAVE_FAIL);
+           res.status(200).send(util.successFalse(statusCode.BAD_REQUEST,resMessage.SAVE_FAIL));
            nect(err);
        }finally{
            pool.releaseConnection(connection);
