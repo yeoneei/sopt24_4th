@@ -16,8 +16,12 @@ module.exports = {
     SAVE_FAIL: "데이터 저장 실패",
     READ_FAIL: "데이터 읽기 실패",
     READ_SUCCESS : "데이터 읽기 성공",
+    BOARD_EMPTY : "글이 없습니다.",
     BOARD_SUCCESS : "글 쓰기 성공",
     BOARD_FAIL : "글쓰기 실패",
+    BOARD_DROP_FAIL : "글 삭제 실패",
+    BOARD_DROP_SUCCESS:"글 삭제 성공",
+    BOARD_IDX_NULL:"글을 찾을 수가 없음",
 
     STUDENT_SELECT_SUCCESS: "학생 조회 성공",
     NO_STUDENT: "존재하지 않는 학생입니다",

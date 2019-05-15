@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var pool = require('../../../config/dbConfig');
+var pool = require('../../config/dbConfig');
 var moment = require('moment');
 const crypto = require('crypto-promise');
-const statusCode = require('../../../module/statusCode');
-const resMessage = require('../../../module/responseMessage');
-const util = require('../../../module/utils');
+const statusCode = require('../../module/statusCode');
+const resMessage = require('../../module/responseMessage');
+const util = require('../../module/utils');
 
 /* GET home page. */
 
@@ -50,14 +50,62 @@ router.post('/',async(req,res)=>{
                 res.status(200).send(util.successTrue(statusCode.OK,resMessage.BOARD_SUCCESS));
             }
 
-
         }else{
             res.status(200).send(util.successFalse(statusCode.BAD_REQUEST,resMessage.MISS_MATCH_PW));
-        }
-        
-        
+        }   
+    }  
+})
+
+router.get('/:id',async(req,res)=>{
+    let id = req.params.id;
+    const postIdxQuery = 'SELECT * FROM 4th.board WHERE boardIdx = ?';
+    
+    let postIdxResult;
+    try{
+        var connection = await pool.getConnection();
+        postIdxResult = await connection.query(postIdxQuery,[id]) || null;
+
+    }catch(err){
+        console.log(err);
+        connection.rollback(()=>{});
+        next(err);
+        res.status(200).send(util.successFalse(statusCode.DB_ERROR,resMessage.READ_FAIL));
+    }finally{
+        pool.releaseConnection(connection);
     }
-    
-    
+
+    if(postIdxResult != null){
+        console.log(postIdxResult);
+        let data = {
+            title : postIdxResult[0].title,
+            content : postIdxResult[0].content
+        }
+        res.status(200).send(util.successTrue(statusCode.OK,resMessage.READ_SUCCESS,data));
+    }else{
+        res.status(200).send(util.successTrue(statusCode.OK,resMessage.BOARD_EMPTY));
+    }
+
+})
+
+router.delete('/',async(req,res)=>{
+    let index = req.body.boardIdx;
+    let deleteQuery = 'DELETE FROM 4th.board WHERE boardIdx =?';
+    let deleteResult;
+    try{
+        var connection = await pool.getConnection();
+        deleteResult = await connection.query(deleteQuery,[index])||null;
+    }catch(err){
+        console.log(err);
+        connection.rollback(()=>{});
+        res.status(200).send(util.successFalse(statusCode.DB_ERROR,resMessage.BOARD_DROP_FAIL));
+    }finally{
+        console.log(deleteResult);
+        if(deleteResult!=null){
+            res.status(200).send(util.successTrue(statusCode.OK,resMessage.BOARD_DROP_SUCCESS));
+        }else{
+            res.status(200).send(util.successFalse(statusCode.DB_ERROR,resMessage.BOARD_IDX_NULL));
+        }
+    }
+
 })
 module.exports = router;
